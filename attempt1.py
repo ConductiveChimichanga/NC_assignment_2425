@@ -51,31 +51,54 @@ class ConvolutionalNN(nn.Module):
         self.conv_layer4 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1)
         self.max_pool2 = nn.MaxPool2d(kernel_size = 2, stride = 2)
 
-        self.fc1 = nn.Linear(256 * 32 * 32, 128)
-        # 256 channels, 32x32 image size after pooling
+        self.conv_layer5 = nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding=1)
+        self.conv_layer6 = nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)
+        self.max_pool3 = nn.MaxPool2d(kernel_size = 2, stride = 2)
+
+        self.fc1 = nn.Linear(512 * 16 * 16, 4096)
+        self.fc2 = nn.Linear(4096, 4096)
+        self.fc3 = nn.Linear(4096, num_classes)
         self.relu1 = nn.ReLU()
-        self.fc2 = nn.Linear(128, num_classes)
         self.relu2 = nn.ReLU()
+        self.relu3 = nn.ReLU()
+        self.dropout = nn.Dropout(p=0.5)
+        self.dropout2 = nn.Dropout(p=0.5)
+        self.dropout3 = nn.Dropout(p=0.5)
+        self.dropout4 = nn.Dropout(p=0.5)
+        self.dropout5 = nn.Dropout(p=0.5)
+        self.dropout6 = nn.Dropout(p=0.5)
+
 
     # Progresses data across layers
     def forward(self, x):
        
         # Implement the forward pass --- SOLUTION
-        out = self.conv_layer1(x)
-        out = self.relu1(out)
-        out = self.conv_layer2(out)
-        out = self.relu1(out)
-        out = self.max_pool1(out)
-        out = self.conv_layer3(out)
-        out = self.relu1(out)
-        out = self.conv_layer4(out)
-        out = self.relu1(out)
-        out = self.max_pool2(out)
-        out = out.view(out.size(0), -1)
-        out = self.fc1(out)
-        out = self.relu1(out)
-        out = self.fc2(out)
-        out = self.relu2(out)
+        
+        # Convolutional layers with ReLU and MaxPooling
+        x = self.relu1(self.conv_layer1(x))
+        x = self.relu2(self.conv_layer2(x))
+        x = self.max_pool1(x)
+        x = self.dropout(x)
+
+        x = self.relu1(self.conv_layer3(x))
+        x = self.relu2(self.conv_layer4(x))
+        x = self.max_pool2(x)
+        x = self.dropout2(x)
+
+        x = self.relu1(self.conv_layer5(x))
+        x = self.relu2(self.conv_layer6(x))
+        x = self.max_pool3(x)
+        x = self.dropout3(x)
+
+        # Flatten the output for the fully connected layers
+        x = x.view(x.size(0), -1)
+
+        # Fully connected layers with ReLU and Dropout
+        x = self.relu3(self.fc1(x))
+        x = self.dropout4(x)
+        x = self.relu3(self.fc2(x))
+        x = self.dropout5(x)
+        out = self.fc3(x)
         
         return out
     
@@ -92,6 +115,9 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 # Training loop
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
+        images = images.to(device)  # Move images to the correct device
+        labels = labels.to(device)  # Move labels to the correct device
+
         # Forward pass
         outputs = model(images)
         loss = criterion(outputs, labels)
@@ -101,9 +127,9 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i+1) % 100 == 0:
+        if (i + 1) % 100 == 0:
             print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}')
-# Save the model checkpoint
+
 torch.save(model.state_dict(), 'model.ckpt')
 # Load the model checkpoint
 model.load_state_dict(torch.load('model.ckpt'))
@@ -114,12 +140,14 @@ correct = 0
 total = 0   
 with torch.no_grad():
     for images, labels in test_loader:
-        images = images.to(device)
-        labels = labels.to(device)
+        images = images.to(device)  # Move images to the correct device
+        labels = labels.to(device)  # Move labels to the correct device
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
+
 print(f'Accuracy of the model on the test images: {100 * correct / total:.2f}%')
+
 # Save the model
 torch.save(model.state_dict(), 'model_final.pth')
