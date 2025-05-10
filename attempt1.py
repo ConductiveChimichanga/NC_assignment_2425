@@ -10,7 +10,7 @@ import tqdm
 print("Hyperparameters")
 
 num_classes = 91
-learning_rate = 0.001
+learning_rate = 0.01
 num_epochs = 20
 batch_size = 64
 
