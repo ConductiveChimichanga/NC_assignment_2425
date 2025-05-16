@@ -27,10 +27,14 @@ This project implements a deep learning-based food image classification system u
 
     ```
     python==3.11.11
-    torch==2.0.1
-    torchvision==0.15.2
+    torch==2.6.0
+    torchvision==0.21.0
     numpy==1.26.4
     tqdm==4.66.2
+    transformers
+    accelerate
+    Pillow
+    matplotlib
     ```
 
 2. Install the dependencies by running:
@@ -46,16 +50,16 @@ This project implements a deep learning-based food image classification system u
 #### Using `pip`:
 
 ```bash
-pip install torch==2.0.1 torchvision==0.15.2 numpy==1.26.4 tqdm==4.66.2
+pip install torch==2.6.0 torchvision==0.21.0 numpy==1.26.4 tqdm transformers accelerate Pillow matplotlib
 ```
 
 #### Using conda
 
 ```bash
-conda install pytorch==2.0.1 torchvision==0.15.2 numpy==1.26.4 tqdm==4.66.2 -c pytorch
+conda install torch==2.6.0 torchvision==0.21.0 numpy==1.26.4 tqdm transformers accelerate Pillow matplotlib -c pytorch
 ```
 
-## Running `NC_groupXX.ipynb`
+## Running the .ipybn file
 
 Follow the steps below to open and run the notebook in either **Jupyter Notebook**, **JupyterLab**, or **Visual Studio Code**.
 
@@ -63,12 +67,12 @@ Follow the steps below to open and run the notebook in either **Jupyter Notebook
 
 - **Using Jupyter Notebook or JupyterLab:**
   - Launch Jupyter Notebook or JupyterLab.
-  - Navigate to the directory containing `NC_groupXX.ipynb`.
+  - Navigate to the directory containing the .ipynb file.
   - Click on the notebook to open it.
 
 - **Using Visual Studio Code (VS Code):**
   - Open Visual Studio Code.
-  - Open the folder containing `NC_groupXX.ipynb`.
+  - Open the folder containing the .ipynb file.
   - Click on the notebook file to open it in the interactive editor.
   - Make sure the **Python extension** is installed and active.
 
@@ -87,9 +91,11 @@ Follow the steps below to open and run the notebook in either **Jupyter Notebook
 
 - The dataset must be placed in the following structure:
   ```
-  /data/
-        train/
-        test/
+  /[parent folder]/
+                  train/
+                  test/
+                  .ipybn
+                  README.md   
   ```
 - Each class should be in its own subdirectory.
 - **Do not include the dataset in your submission.**
